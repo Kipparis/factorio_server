@@ -1,0 +1,41 @@
+---
+- name: Configure infrastructure
+  gather_facts: true
+  hosts: yandex_compute_cloud
+  become: yes
+  become_user: root
+  remote_user: aleksey
+
+  tasks:
+    - name: Install docker deps
+      ansible.builtin.package:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+  
+    - name: Add Docker Repository
+      apt_repository:
+        repo: >
+          deb https://download.docker.com/linux/ubuntu
+          {{ ansible_distribution_release }} stable
+
+        state: present
+  
+    - name: Install docker
+      ansible.builtin.package:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: latest
+
+    - name: Download factorio image for docker
+
